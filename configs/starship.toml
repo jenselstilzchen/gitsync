@@ -46,7 +46,7 @@ style = "bold green"
 
 [status]
 symbol = "🔴"
-format = "[$symbol $common_meaning$signal_name$maybe_init $signal_number]($style)"
+format = "[$symbol $common_meaning$signal_name$maybe_init $signal_number]($style) "
 disabled = false
 
 [custom.size]
