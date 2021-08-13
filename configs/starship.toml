@@ -1,6 +1,6 @@
 #Inserts a blank line between shell prompts
 add_newline = false
-format = """$custom$memory_usage$cmd_duration$status
+format = """$custom$memory_usage$cmd_duration$status$git_branch$git_commit$git_state$git_metrics$git_status
 $env_var$hostname$directory$character"""
 #format = """$env_var$hostname:$directory $memory_usage $cmd_duration $status
 #$character """
@@ -24,6 +24,13 @@ style = "bold blue"
 [env_var.USER]
 default = "unknown user"
 format = "[$env_value@](bold blue)"
+
+[git_branch]
+symbol = "🌱"
+format = "[$symbol $branch]($style) "
+
+[git_metrics]
+disabled = false
 
 [hostname]
 ssh_only = false
