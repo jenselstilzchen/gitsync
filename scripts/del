@@ -1,0 +1,47 @@
+#!/bin/bash
+#move files and directories to ~/deleted/yyyy-mm-dd_HH-MM-SS instead of deleting them
+#last updated 17.02.2020
+#02.08.2021 added progressbar and now moving files to /tmp/ instead of ~/deleted/
+
+source ~jens/bin/progressbar.sh || exit 1
+
+declare -a INPUT
+INPUT=($@)
+
+DATE=$(date +%Y-%m-%d_%H-%M-%S)
+
+[ "$1" == "" ] && exit 0
+
+TOTSIZE=0
+j=0
+
+for i in "${INPUT[@]}"; do
+	progressbar "Deleting file $j of ${#@}" $j ${#@} $(du -bh $i | cut -f1 | tail -1)
+#  echo -ne " $j/${#@}\r"
+  if [ -e "$i" ]; then
+		FILESIZE=$(du -b $i | cut -f1 | tail -1)
+		TOTSIZE=$(echo "$TOTSIZE + $FILESIZE" | bc)
+		mv $(pwd)/$i /tmp/${DATE}-${i} || exit 1
+  fi
+  j=$((j+1))
+done
+
+if [ "$TOTSIZE" -gt 1000 ] && [ "$TOTSIZE" -le 1000000 ]; then 
+	TOTSIZE=$(echo "$TOTSIZE / 1000" | bc -l)
+	TOTSIZE=$(printf %.2f $TOTSIZE)
+	TOTSIZE="$TOTSIZE KB"
+elif [ "$TOTSIZE" -gt 1000000 ] && [ "$TOTSIZE" -le 1000000000 ]; then
+	TOTSIZE=$(echo "$TOTSIZE / 1000000" | bc -l)
+	TOTSIZE=$(printf %.2f $TOTSIZE)
+	TOTSIZE="$TOTSIZE MB"
+elif [ "$TOTSIZE" -gt 1000000000 ]; then
+	TOTSIZE=$(echo "$TOTSIZE / 1000000000" | bc -l)
+	TOTSIZE=$(printf %.2f $TOTSIZE)
+	TOTSIZE="$TOTSIZE GB"
+else
+	TOTSIZE=$(printf %.2f $TOTSIZE)
+	TOTSIZE="$TOTSIZE B"
+fi
+progressbar "Deleted $j of ${#@} files" $j ${#@} $TOTSIZE
+
+exit 0
