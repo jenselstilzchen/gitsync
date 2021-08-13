@@ -1,0 +1,49 @@
+#Inserts a blank line between shell prompts
+add_newline = false
+format = """$custom$memory_usage$cmd_duration$status
+$env_var$hostname$directory$character"""
+#format = """$env_var$hostname:$directory $memory_usage $cmd_duration $status
+#$character """
+
+#replace the "❯" symbol in the prompt with "➜"
+[character]
+success_symbol = "[❯](bold green)"
+error_symbol = "[❯](bold red)"
+
+[cmd_duration]
+min_time = 0
+format = "[⌛ $duration]($style) "
+style = "bold #F94E9B"
+
+[directory]
+read_only = "🔒"
+truncation_length = 0
+truncate_to_repo = false
+style = "bold blue"
+
+[env_var.USER]
+default = "unknown user"
+format = "[$env_value@](bold blue)"
+
+[hostname]
+ssh_only = false
+format = "[$hostname:](bold blue)"
+
+[memory_usage]
+disabled = false
+threshold = -1
+symbol = "🐏"
+format = "[$symbol $ram]($style) "
+style = "bold green"
+
+[status]
+symbol = "🔴"
+format = "[$symbol $common_meaning$signal_name$maybe_init $signal_number]($style)"
+disabled = false
+
+[custom.size]
+command = "echo $(du -h . | tail -1 | cut -f 1 &)iB"
+when = """ test "$HOME" == "$HOME" """
+style = "bold black"
+symbol = "💾"
+format = "[$symbol $output]($style) "
