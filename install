@@ -3,8 +3,16 @@
 PWD=$(pwd)
 
 #create symlinks for configs
-ln -sf $PWD/configs/starship.toml ~/.config/starship.toml
+echo " creating symlinks for configs:"
+echo -n " starship ..."
+command -v starship &> /dev/null && ln -sf $PWD/configs/starship.toml ~/.config/starship.toml
+echo "done"
 
 #create symlinks for scripts
+echo " creating symlinks for scripts:"
+echo -n " del ..."
 ln -sf $PWD/scripts/del ~/bin/del
+echo "done"
+echo -n "progressbar.sh ..."
 ln -sf $PWD/scripts/progressbar.sh ~/bin/progressbar.sh
+echo "done"
