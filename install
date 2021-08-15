@@ -39,9 +39,10 @@ NC='\033[0m'
 for i in $(ls .); do
 	if [[ -d "$i" ]]; then
 		for j in $(ls $i); do
-			[[ "$i" == "configs" ]]  && LOCAL="$HOME/.config/$j"
-			[[ "$i" == "dotfiles" ]] && LOCAL="$HOME/.$j"
-			[[ "$i" == "scripts" ]]  && LOCAL="$HOME/bin/$j"
+			[[ "$i" == "configs" ]]     && LOCAL="$HOME/.config/$j"
+			[[ "$i" == "dotfiles" ]]    && LOCAL="$HOME/.$j"
+			[[ "$i" == "backgrounds" ]] && LOCAL="$HOME/backgrounds/$j"
+			[[ "$i" == "scripts" ]]     && LOCAL="$HOME/bin/$j"
 			REPOS="$PWD/$i/$j"
 			if [[ -f "$LOCAL" ]]; then
 				if cmp -s "$LOCAL" "$REPOS"; then
