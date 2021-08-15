@@ -1,0 +1,3 @@
+"set tabstop to appear as two spaces
+set tabstop=2
+set softtabstop=0 noexpandtab

@@ -1,0 +1,6 @@
+alias login_herakles='ssh -X -c aes256-cbc jens@131.220.65.164'
+alias ..='cd ..'
+alias ...='cd ../..'
+alias l='ls -lah'
+alias md='mkdir'
+alias s='source ~/.bashrc'
