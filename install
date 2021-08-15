@@ -1,6 +1,40 @@
 #!/bin/bash
 
 PWD=$(pwd)
+HOME=$(echo ~)
+
+RED='\033[1;31m'
+GREEN='\033[1;32m'
+YELLOW='\033[1;33m'
+NC='\033[0m'
+
+#check status of files on device against status of files in repo
+for i in $(ls .); do
+	if test -d "$i"; then
+		for j in $(ls $i); do
+			[[ "$i" == "configs" ]]  && LOCAL="$HOME/.config/$j"
+			[[ "$i" == "dotfiles" ]] && LOCAL="$HOME/.$j"
+			[[ "$i" == "scripts" ]]  && LOCAL="$HOME/bin/$j"
+			REPOS="$PWD/$i/$j"
+			if test -f "$LOCAL"; then
+				if cmp -s "$LOCAL" "$REPOS"; then
+					STATUS="up to date"
+					COLOR=${GREEN}
+				else
+					STATUS="unregistered changes"
+					COLOR=${YELLOW}
+				fi
+			else
+				STATUS="does not exist"
+				COLOR=${RED}
+			fi
+			printf "${COLOR}%-30s %-50s %22s${NC}\n" "$i/$j" "$LOCAL"  "$STATUS"
+		done
+	fi
+done
+
+echo "continue?"
+read
 
 #create symlinks for configs
 command -v starship &> /dev/null && ln -sf $PWD/configs/starship.toml ~/.config/starship.toml
@@ -9,3 +43,5 @@ command -v starship &> /dev/null && ln -sf $PWD/configs/starship.toml ~/.config/
 mkdir ~/bin &> /dev/null
 cp $PWD/scripts/del ~/bin/del
 cp $PWD/scripts/progressbar.sh ~/bin/progressbar.sh
+
+exit 0
