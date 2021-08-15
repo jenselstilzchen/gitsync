@@ -2,30 +2,33 @@
 
 confirm() {
 
-  local _prompt _default _response
+	local _prompt _default _response
 
-  if [ "$1" ]; then _prompt="$1"; else _prompt="Are you sure"; fi
-  _prompt="$_prompt [y/n] ?"
+	if [ "$1" ]; then _prompt="$1"; else _prompt="Are you sure"; fi
+	_prompt="$_prompt [y/n] ?"
 
-  # Loop forever until the user enters a valid response (Y/N or Yes/No).
-  while true; do
-    read -r -p "$_prompt " _response
-    case "$_response" in
-      [Yy][Ee][Ss]|[Yy]) # Yes or Y (case-insensitive).
-        return 0
-        ;;
-      [Nn][Oo]|[Nn])  # No or N.
-        return 1
-	exit 0
-        ;;
-      *) # Anything else (including a blank) is invalid.
-        ;;
-    esac
-  done
+	# Loop forever until the user enters a valid response (Y/N or Yes/No).
+	while true; do
+		read -r -p "$_prompt " _response
+		case "$_response" in
+			[Yy][Ee][Ss]|[Yy]) # Yes or Y (case-insensitive).
+				return 0
+				;;
+			[Nn][Oo]|[Nn])  # No or N.
+				return 1
+				exit 0
+				;;
+			*) # Anything else (including a blank) is invalid.
+				;;
+		esac
+	done
 }
 
 PWD=$(pwd)
 HOME=$(echo ~)
+
+declare -a CHNGLOCAL
+declare -a CHNGREPOS
 
 RED='\033[1;31m'
 GREEN='\033[1;32m'
@@ -34,38 +37,66 @@ NC='\033[0m'
 
 #check status of files on device against status of files in repo
 for i in $(ls .); do
-	if test -d "$i"; then
+	if [[ -d "$i" ]]; then
 		for j in $(ls $i); do
 			[[ "$i" == "configs" ]]  && LOCAL="$HOME/.config/$j"
 			[[ "$i" == "dotfiles" ]] && LOCAL="$HOME/.$j"
 			[[ "$i" == "scripts" ]]  && LOCAL="$HOME/bin/$j"
 			REPOS="$PWD/$i/$j"
-			if test -f "$LOCAL"; then
+			if [[ -f "$LOCAL" ]]; then
 				if cmp -s "$LOCAL" "$REPOS"; then
 					STATUS="up to date"
 					COLOR=${GREEN}
+				elif [[ -f "$LOCAL" ]] && [[ "$i" != "scripts" ]]; then
+					STATUS="not linked"
+					COLOR=${YELLOW}
+					CHNGLOCAL+=("$LOCAL")
+					CHNGREPOS+=("$REPOS")
 				else
 					STATUS="unregistered changes"
 					COLOR=${YELLOW}
+					CHNGLOCAL+=("$LOCAL")
+					CHNGREPOS+=("$REPOS")
 				fi
 			else
 				STATUS="does not exist"
 				COLOR=${RED}
+				CHNGLOCAL+=("$LOCAL")
+				CHNGREPOS+=("$REPOS")
 			fi
-			printf "${COLOR}%-30s %-50s %22s${NC}\n" "$i/$j" "$LOCAL"  "$STATUS"
+			printf "${COLOR}%-30s %-50s %-22s${NC}\n" "$i/$j" "$LOCAL"  "$STATUS"
 		done
 	fi
 done
 
+NCHANGES=${#CHNGLOCAL[@]}
+if [[ "$NCHANGES" -eq 0 ]]; then
+	echo
+	echo "All files up to date."
+	exit 0
+fi
+NCHANGES=$((NCHANGES - 1))
+echo
+echo "Pending changes:"
+for i in $(seq 0 $NCHANGES); do
+	REPOS=${CHNGREPOS[$i]/$PWD\//}
+	printf "%-30s %-6s %-22s\n" "${REPOS}" "--->" "${CHNGLOCAL[$i]}"
+done
+
 echo
 confirm "update all files?"
+echo
 
-#create symlinks for configs
-command -v starship &> /dev/null && ln -sf $PWD/configs/starship.toml ~/.config/starship.toml
-
-#create symlinks for scripts
-mkdir ~/bin &> /dev/null
-cp $PWD/scripts/del ~/bin/del
-cp $PWD/scripts/progressbar.sh ~/bin/progressbar.sh
+for i in $(seq 0 $NCHANGES); do
+	REPOS=${CHNGREPOS[$i]/$PWD\//}
+	if [[ "${CHNGREPOS[$i]}" == *"scripts"* ]]; then
+		mkdir ~/bin &> /dev/null
+		cp ${CHNGREPOS[$i]} ${CHNGLOCAL[$i]}
+		printf "%-30s %-11s %-22s\n" "${REPOS}" "copied to" "${CHNGLOCAL[$i]}"
+	else
+		ln -sf ${CHNGREPOS[$i]} ${CHNGLOCAL[$i]}
+		printf "%-30s %-11s %-22s\n" "${REPOS}" "linked to" "${CHNGLOCAL[$i]}"
+	fi
+done
 
 exit 0
