@@ -16,7 +16,6 @@ confirm() {
 				;;
 			[Nn][Oo]|[Nn])  # No or N.
 				return 1
-				exit 0
 				;;
 			*) # Anything else (including a blank) is invalid.
 				;;
@@ -86,6 +85,8 @@ done
 
 echo
 confirm "update all files?"
+RES=$?
+[[ "$RES" -eq 1 ]] && exit 0
 echo
 
 for i in $(seq 0 $NCHANGES); do
