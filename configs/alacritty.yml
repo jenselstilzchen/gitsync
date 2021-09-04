@@ -746,13 +746,14 @@ colors:
 # If the same trigger is assigned to multiple actions, all of them are executed
 # in the order they were defined in.
 key_bindings:
-  - { key: Key5,     mods: Alt,        chars: "\x5b"                     }
-  - { key: Key6,     mods: Alt,        chars: "\x5d"                     }
-  - { key: Key7,     mods: Alt|Shift,  chars: "\x5c"                     }
-  - { key: Key7,     mods: Alt,        chars: "\x7c"                     }
-  - { key: Key8,     mods: Alt,        chars: "\x7b"                     }
-  - { key: Key9,     mods: Alt,        chars: "\x7d"                     }
-  - { key: L,        mods: Alt,        chars: "\x40"                     }
+  - { key: 28,      mods: Alt, chars: "{" }
+  - { key: 25,      mods: Alt, chars: "}" }
+  - { key: 37,      mods: Alt, chars: "@" }
+  - { key: 26,      mods: Alt|Shift, chars: "\\" }
+  - { key: 26,      mods: Alt, chars: "|" }
+  - { key: 45,      mods: Alt, chars: "~" }
+  - { key: 23,      mods: Alt, chars: "[" }
+  - { key: 22,      mods: Alt, chars: "]" }
   #- { key: Paste,                                       action: Paste          }
   #- { key: Copy,                                        action: Copy           }
   #- { key: L,         mods: Control,                    action: ClearLogNotice }
