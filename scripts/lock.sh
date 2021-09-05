@@ -1,9 +1,9 @@
 #!/bin/sh
 
 BLANK='#1d1f21'
-CLEAR='#c5c8c6'
+CLEAR='#8c9440'
 DEFAULT='#707880'
-TEXT='#81a2be'
+TEXT='#c5c8c6'
 WRONG='#a54242'
 VERIFYING='#5f819d'
 
